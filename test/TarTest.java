@@ -1,13 +1,12 @@
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
 
 class TarTest {
-    File abs = new File(".");
-
     private void assertDirs(String expected, String result) {
         try {
             for (File file: new File(expected).listFiles()) {
@@ -32,21 +31,30 @@ class TarTest {
 
     @org.junit.jupiter.api.Test
     void u() {
-        new Tar(new File("files/test-u/result/unarch.txt")).unarchive();
-        assertDirs("files/test-u/result/", "files/test-u/expected/");
+        File archFile = null;
+        File unarchFile = new File("files/test-u/result/unarch.txt");
+        ArrayList<File> fileList = null;
+        new Tar(archFile, unarchFile, fileList).tar();
+        assertDirs("files/test-u/expected/", "files/test-u/result/");
         new File("files/test-u/result/test1.txt").delete();
         new File("files/test-u/result/test2.txt").delete();
         new File("files/test-u/result/sas.txt").delete();
-
     }
 
     @org.junit.jupiter.api.Test
     void out() {
-        File target = new File("files/test-out/result/output.txt");
-        for (File file: new File("files/test-out/result").listFiles()) {
-            new Tar(file).archive(target);
-        }
-        assertDirs("files/test-u/result/", "files/test-u/expected/");
-        new File(new File("files/test-out/result/output.txt").getAbsolutePath()).delete();
+        File archFile = new File("files/test-out/result/output.txt");
+        File unarchFile = null;
+        ArrayList<File> fileList = new ArrayList<File>() {
+            {
+                add(new File("files/test-out/result/test1.txt"));
+                add(new File("files/test-out/result/test2.txt"));
+                add(new File("files/test-out/result/sas.txt"));
+            }
+        };
+        if (archFile.exists()) archFile.delete();
+        new Tar(archFile, unarchFile, fileList).tar();
+        assertDirs("files/test-out/expected/", "files/test-out/result/");
+        new File("files/test-out/result/output.txt").delete();
     }
 }
