@@ -1,3 +1,4 @@
+import Tar.*;
 import java.io.*;
 import java.util.ArrayList;
 import org.kohsuke.args4j.Argument;
@@ -32,7 +33,11 @@ public class Archiver {
             parser.printUsage(System.err);
             return;
         }
-        Tar tar = new Tar(archFile, unarchFile, fileList);
-        tar.tar();
+        try {
+            Tar tar = new Tar(archFile, unarchFile, fileList);
+            tar.tar();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 }
